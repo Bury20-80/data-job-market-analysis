@@ -41,10 +41,40 @@ The base analysis covers four questions:
 I loaded `data_salary_all.xlsx` into Power Query and split it into two tables: one for job information and one for skills. Basic cleaning steps --> removing unused columns, fixing data types, trimming whitespace --> then loaded both into the Excel Data Model.
 
 ![1.png](Images/1.png)
-![2.png](Images/2.png)
-![dataset1.png](Images/dataset1.png)
 
-### Findings
+![2.png](Images/2.png)
+
+### Relationship Model
+
+![Relationship.png](Images/Relationship.png)
+
+---
+
+# Key Findings
+
+- **SQL and Python appear in ~50% of postings** → strongest market coverage.
+- **More skills ≠ more pay** → specialization often beats breadth.
+- **Python outperforms SQL in salary** despite similar demand.
+- **US premium varies heavily by role** — not every role benefits equally.
+- **Skill Value Index favors high-demand skills over niche peaks.**
+
+---
+
+# Analysis Overview
+
+---
+
+## 1. Skill–Pay Correlation
+
+Question:
+
+> Does requiring more skills correlate with higher salary?
+
+Scatter plot comparing:
+- Median Salary
+- Average Skills per Job
+
+### Visualization
 
 ![Analysis1.png](Images/Analysis1.png)
 
@@ -56,23 +86,24 @@ I loaded `data_salary_all.xlsx` into Power Query and split it into two tables: o
 
 ## 2. Regional Salary Analysis
 
-**Tools used:** Power Pivot, DAX
+Question:
 
-### DAX Measures
+> How much does geography impact compensation?
 
-```dax
-Median Salary := MEDIAN(data_jobs_all[salary_year_avg])
-```
+DAX measure:
 
 ```dax
-US Median Salary := 
+Median Salary :=
+MEDIAN(data_jobs_all[salary_year_avg])
+
+US Median Salary :=
 CALCULATE(
     MEDIAN(data_jobs_all[salary_year_avg]),
     data_jobs_all[job_country] = "United States"
 )
 ```
 
-### Findings
+### Visualization
 
 ![MedianCountry.png](Images/MedianCountry.png)
 
@@ -99,11 +130,13 @@ I connected the jobs table to the skills table via a 1:N relationship on `job_id
 
 ---
 
-## 4. Financial Valuation of Top Skills
+## 4. Financial Valuation of Skills
 
-**Tools used:** Dual-Axis Combo PivotChart
+Question:
 
-I built a combo chart mapping median salary (bar chart, left axis) against skill likelihood (data points, right axis) to compare financial value alongside market demand side by side.
+> Which skills combine demand and compensation?
+
+### Visualization
 
 ![ComboChart.png](Images/ComboChart.png)
 
@@ -126,16 +159,14 @@ I built a combo chart mapping median salary (bar chart, left axis) against skill
 Standard pay correlation doesn't capture effort-to-reward. This measure calculates salary per required skill to show which roles give the most financial return per unit of learning:
 
 ```dax
-Salary Efficiency := 
+Salary Efficiency :=
 IFERROR(
-    DIVIDE([Median Salary], [Skills Per Job]), 
-    BLANK()
+DIVIDE([Median Salary], [Skills Per Job]),
+BLANK()
 )
 ```
 
-`IFERROR` wraps the division to return `BLANK()` rather than an error if a posting has no skills listed.
-
-### Findings
+### Visualization
 
 ![Efficiency.png](Images/Efficiency%20.png)
 
@@ -145,24 +176,22 @@ IFERROR(
 
 ---
 
-## 2b. US Salary Premium (Quantified)
+## 6. US Salary Premium *(Custom Metric)*
 
-**Tools used:** DAX, Context Transition, `DIVIDE`, `IFERROR`
-
-The base regional table showed US salaries are higher, but not by how much. This measure calculates the exact percentage premium:
+Measures exact US advantage.
 
 ```dax
-US vs Non-US Premium := 
+US vs Non-US Premium :=
 IFERROR(
-    DIVIDE(
-        [Median Salary US] - [Median Salary Non-US], 
-        [Median Salary Non-US]
-    ), 
-    BLANK()
+DIVIDE(
+[Median Salary US]-[Median Salary Non-US],
+[Median Salary Non-US]
+),
+BLANK()
 )
 ```
 
-### Findings
+### Visualization
 
 ![USPremium.png](Images/USPremium.png)
 
@@ -181,14 +210,14 @@ Median salary alone can mislead --> a skill might pay well but appear in only 1%
 $$\text{Skill Value Index} = \text{Median Salary} \times \text{Skill Likelihood}$$
 
 ```dax
-Skill Value Index := 
+Skill Value Index :=
 IFERROR(
-    [Median Salary] * [Skill Likelihood], 
-    BLANK()
+[Median Salary] * [Skill Likelihood],
+BLANK()
 )
 ```
 
-### Findings
+### Visualization
 
 ![Skill Value Index.png](Images/Skill%20Value%20Index.png)
 
