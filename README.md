@@ -36,7 +36,7 @@ Does requiring more skills correlate with higher salary? Scatter plot: median sa
 ![Analysis1.png](Images/Analysis1.png)
 
 - Senior Data Scientists top the chart (~$157K) with fewer skills required (~4.8) than most other senior roles.
-- Senior Data Engineers are the opposite: highest skill count (~8), but lower median salary (~$147K) than Senior Data Scientists. Technical breadth hits a pay ceiling.
+- Senior Data Engineers are the opposite: highest skill count (8), but lower median salary ($147K) than Senior Data Scientists. Technical breadth hits a pay ceiling.
 - Data Analyst to Senior Data Analyst shows a clean $94K to $112K jump with only a modest skill increase, one of the more predictable progressions in the data.
 
 ## 2. Regional Salary Analysis
